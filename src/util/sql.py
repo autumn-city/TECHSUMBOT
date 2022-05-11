@@ -18,26 +18,26 @@ def sql_connection():
 
 def set_timeout(num, callback):
   def wrap(func):
-    def handle(signum, frame): # 收到信号 SIGALRM 后的回调函数，第一个参数是信号的数字，第二个参数是the interrupted stack frame.
+    def handle(signum, frame): 
       raise RuntimeError
     def to_do(*args, **kwargs):
       try:
-        signal.signal(signal.SIGALRM, handle) # 设置信号和回调函数
-        signal.alarm(num) # 设置 num 秒的闹钟
+        signal.signal(signal.SIGALRM, handle) 
+        signal.alarm(num) 
       #   print('start alarm signal.')
         r = func(*args, **kwargs)
       #   print('close alarm signal.')
-        signal.alarm(0) # 关闭闹钟
+        signal.alarm(0) 
         return r
       except RuntimeError as e:
         callback()
     return to_do
   return wrap
 
-def after_timeout(): # 超时后的处理函数
+def after_timeout(): 
   print("Time out!")
 
-@set_timeout(3, after_timeout) # 限时 2 秒超时
+@set_timeout(3, after_timeout) 
 def get_query_name(Id):
    cursor = sql_connection()
    sql = '''
@@ -60,7 +60,7 @@ def get_parientid(Id):
    else: 
       return 'Null'
 
-@set_timeout(3, after_timeout) # 限时 2 秒超时
+@set_timeout(3, after_timeout) 
 def get_votes(Id):
    cursor = sql_connection()
    sql = '''
@@ -83,7 +83,7 @@ def get_query_body(Id):
 
 
 
-@set_timeout(3, after_timeout) # 限时 2 秒超时
+@set_timeout(3, after_timeout) 
 def get_answer_body(Id):
    cursor = sql_connection()
    sql = '''
@@ -116,27 +116,10 @@ def get_related_answer():
    -- and Posts.AnswerCount>=1
    and b.Tags like '%python%'
    group by a.RelatedPostId order by sum(b.AnswerCount) desc 
-   ''' 
-
-   # sql = '''
-   # SELECT  PostId, RelatedPostId
-   # FROM post_links WHERE LinkTypeId = 3 AND (PostId>100000)
-   # '''
-
-
-   # try:
-      # 执行SQL语句
+   '''
    cursor.execute(sql)
-   # 获取所有记录列表
    results = cursor.fetchall()
-   # for row in results:
-   #     fname = row[0]
-   #     lname = row[1]
-   #     # 打印结果
-   #     print ("fname=%s,lname=%s" % \
-   #             (fname, lname))
-   # except:
-   #    print ("Error: unable to fetch data")
+
    data = pd.DataFrame(list(results),columns=['Original post ID','number of related answers'])
    data.to_csv('data.csv',index=False)
    print(data)
@@ -155,9 +138,7 @@ def get_relatedID(id,pl):
    cursor.execute(sql)
    results = cursor.fetchall()
    return results
-   # data = pd.DataFrame(list(results),columns=['Original post ID','number of related answers'])
-   # data.to_csv('data.csv',index=False)
-   # print(data)
+
 
 def get_related_posts(pl):
    cursor = sql_connection()
@@ -222,7 +203,7 @@ def get_tag_posts(tag):
    results = cursor.fetchall()
    return results
 
-@set_timeout(3, after_timeout) # 限时 2 秒超时
+@set_timeout(3, after_timeout) 
 def get_neg_answer(parentid):
    cursor = sql_connection()
    sql = '''

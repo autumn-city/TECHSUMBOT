@@ -104,35 +104,20 @@ def get_sentence_simcsse_similarity(input):
 
 def get_sentence_simcsse_similarity_update(input):
     embeddings = []
-    # for sent in input:
-    #     tokenized_sent = sim_tokenizer(sent, padding=True, truncation=True, return_tensors="pt")
-    #     with torch.no_grad():
-    #         embedding = sim_model(**tokenized_sent, output_hidden_states=True, return_dict=True).pooler_output
-    #     embeddings.append(embedding)
+
     from simcse import SimCSE
     model = SimCSE("_2_module/SimCSE/result/my-sup-simcse-bert-base-uncased/")
     for sent in input:
         embedding = model.encode(sent)
-        # if sent == 'commit() writes the data synchronously (blocking the thread its called from).':
-        #     print(embedding)
-        #     print(len(embeddings));exit()
         embeddings.append(embedding)
     return embeddings
 
 def get_sentence_simcsse_similarity_update_origin(input):
     embeddings = []
-    # for sent in input:
-    #     tokenized_sent = sim_tokenizer(sent, padding=True, truncation=True, return_tensors="pt")
-    #     with torch.no_grad():
-    #         embedding = sim_model(**tokenized_sent, output_hidden_states=True, return_dict=True).pooler_output
-    #     embeddings.append(embedding)
     from simcse import SimCSE
     model = SimCSE("princeton-nlp/sup-simcse-bert-base-uncased")
     for sent in input:
         embedding = model.encode(sent)
-        # if sent == 'commit() writes the data synchronously (blocking the thread its called from).':
-        #     print(embedding)
-        #     print(len(embeddings));exit()
         embeddings.append(embedding)
     return embeddings
 
@@ -143,7 +128,6 @@ def get_counts(sents):
 
 def get_sentence_tfidf_similarity(input):
     counts = get_counts(input)
-    # print(counts);exit()
     tf_transformer = TfidfTransformer()
     tf_mat = tf_transformer.fit_transform(counts)
     return tf_mat
@@ -246,14 +230,6 @@ def reduce_redundancy(input,redundancy_threshold):
     for index_1, ground_truth in enumerate(embedding):
         flag = False
 
-        # 第一句是7
-        # if index_1 ==10:
-        #     from simcse import SimCSE
-        #     model = SimCSE("_2_module/SimCSE/result/my-sup-simcse-bert-base-uncased/")
-        #     emd = model.encode('\"commit() returns true if the save works, false otherwise.', device=None, return_numpy=False, normalize_to_unit=True, keepdim=False, max_length=128)
-        #     print('-'+str(sents[10]+'-'))
-        #     print(sentence_similarity_score(emd, embedding[10]));exit()
-
         for index_2, sent in enumerate(summary_embedding):
 
             if sim_algorithm =='simcse' or sim_algorithm =='simcse_origin':
@@ -276,34 +252,6 @@ def reduce_redundancy(input,redundancy_threshold):
 
 
 
-def test():
-
-    input_1 = ["\"commit() returns true if the save works, false otherwise.","commit() writes the data synchronously (blocking the thread its called from)."]
-    # 3_What's the difference between commit() and apply() in SharedPreferences.pkl
-
-
-    # inputs = sim_tokenizer(input_1, padding=True, truncation=True, return_tensors="pt")
-    # print(len(inputs['input_ids'][0])+len(inputs['attention_mask'][0]))
-    # print(len(inputs['input_ids'][1])+len(inputs['attention_mask'][1]));exit()
-
-    # with torch.no_grad():
-    #     embedding_1 = sim_model(**inputs, output_hidden_states=True, return_dict=True).pooler_output
-
-
-    # embedding_1 = embedding_1.tolist()
-
-    # sim_score = sentence_similarity_score(embedding_1[0], embedding_1[1])
-
-    from simcse import SimCSE
-    model = SimCSE("_2_module/SimCSE/result/my-sup-simcse-bert-base-uncased/")
-    # similarities = model.similarity(input_1[0], input_1[1])
-    emd_1 = model.encode(input_1[0], device=None, return_numpy=False, normalize_to_unit=True, keepdim=False, max_length=128)
-    emd_2 = model.encode(input_1[1], device=None, return_numpy=False, normalize_to_unit=True, keepdim=False, max_length=128)
-    print(emd_2)
-    cosine_sim_0_1 = 1 - cosine(emd_1, emd_2)
-
-    
-    print(cosine_sim_0_1)
 
 
 
@@ -314,16 +262,7 @@ if __name__ == "__main__":
     max_length = 64
     bert_model = "bert-base-uncased"
     tokenizer = RobertaTokenizer.from_pretrained('roberta-base')
-    # model = RobertaForSequenceClassification.from_pretrained('/workspace/src/_1_module/model/aspn_fine_tuned/models/tanda_roberta_base_asnq/update_model')
     model = RobertaForSequenceClassification.from_pretrained('model/module_1')
-
-    # model = RobertaForSequenceClassification.from_pretrained('/workspace/src/_1_module/model/aspn_fine_tuned/models/tanda_roberta_base_asnq/further_fine_tune')
-
-    # model = RobertaForSequenceClassification.from_pretrained('_1_module/model/aspn_fine_tuned/models/tanda_roberta_base_asnq/update_model')
-    # model = RobertaForSequenceClassification.from_pretrained('_1_module/model/sosingle_checkpoint')
-
-    # model = RobertaForSequenceClassification.from_pretrained('_1_module/model/asnq_tanda_checkpoint/models/')
-    # above model is the model trained for asqn
     
     model.eval()
     # module 2 model setting
@@ -347,10 +286,6 @@ if __name__ == "__main__":
     
     
     for candidate in os.listdir(data_dir):
-        # candidate = "24_What's the difference between \"2*2\" and \"2**2\" in Python?.pkl"
-
-        # start module_1
-        # module_1_result store each sentence in the answer and their score for QA system
         '''
         answers list is a list for relevant answers
         each row [answer id, *answer sentences, votes, question id]
@@ -369,45 +304,16 @@ if __name__ == "__main__":
         module_1_result = sorted(module_1_result.items(),key = lambda x:x[1],reverse = True)
         print('Dic length %s; top: %s; sim: %s; sim algorithn: %s; summarization algorithm: %s'%(str(len(module_1_result)),topk,threshold,sim_algorithm,summarize_algorithm))
 
-        # test for module 1
-        # summary = []
-        # for item in module_1_result:
-        #     summary.append(item[0])
-        # summary = summary[:5]
-
-        # # print(summary);exit()
-        # write_summarize_test(summary, candidate,algorithm='textrank')
-
-
-        # start module_2 (we've already get the sorted result for module-1)
-        # set the sentence with highest score as the groundtruth, delete all sentences similar with it, then loop for top-10 un-deleted sentences
         module_1_result = list(module_1_result)
         copy = module_1_result
 
-
-
         # module for centralize: return the list ranking with centralize score
         centralized_list = centralize_topk(copy,candidate, topk, summarize_algorithm,embedding_algorithm)
-
-
-        # test for module 2
-        # summary = []
-        # for item in centralized_list:
-        #     summary.append(item[0])
-        # summary = summary[:5]
-
-        # # print(summary);exit()
-        # write_summarize_test(summary, candidate,algorithm='textrank')
-
-
 
         # module for reducing redundancy
         summary = reduce_redundancy(centralized_list,redundancy_threshold)
         write_summarize(summary, candidate,algorithm='textrank')
 
-
-        # summary = reduce_redundancy(module_1_result,redundancy_threshold)
-        # write_summarize_test(summary, candidate,algorithm='textrank')
 
 
         
