@@ -5,7 +5,7 @@ This repository contains the code, pre-trained models, and Stack Overflow summar
 We construct the first summarization benchmark named TechSumBench for answer summarization of technical queries in SQA sites. 
 The following figure is an illustration of our benchmark construction.
 
-![Benchmark](figure/benchmark_diagram_v2.pdf)
+![Benchmark](figure/benchmark_png.png)
 
 We also propose TechSumBot, a novel query-focused answer summarization approach with three modules to automatically generate answer summaries for techinal queries.
 
@@ -16,3 +16,4 @@ We provide
 
 # Getting Started
 We provide the answer summarzation 
+
